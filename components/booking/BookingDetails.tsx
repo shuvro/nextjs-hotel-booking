@@ -14,7 +14,7 @@ interface Props {
 const BookingDetails = ({ data }: Props) => {
   const booking = data?.booking;
   const { user } = useAppSelector((state) => state.auth);
-  const isPaid = booking?.paymentInfo?.status === "paid" ? true : false;
+  const isPaid = booking?.paymentInfo?.status === "paid";
 
   return (
     <div className="container">

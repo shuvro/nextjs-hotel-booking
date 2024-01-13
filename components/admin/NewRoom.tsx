@@ -218,7 +218,7 @@ const NewRoom = () => {
           <label className="mb-3">Room Features</label>
 
           {roomFeatures?.map((feature) => (
-            <div className="form-check">
+            <div className="form-check" key={feature.name}>
               <input
                 className="form-check-input"
                 type="checkbox"

@@ -213,7 +213,7 @@ export const canReview = catchAsyncErrors(async (req: NextRequest) => {
 
   const bookings = await Booking.find({ user: req.user._id, room: roomId });
 
-  const canReview = bookings?.length > 0 ? true : false;
+  const canReview = bookings?.length > 0;
 
   return NextResponse.json({
     canReview,
