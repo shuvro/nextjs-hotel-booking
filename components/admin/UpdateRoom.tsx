@@ -237,6 +237,7 @@ const UpdateRoom = ({ data }: Props) => {
                 name={feature.value}
                 onChange={onChange}
                 checked={!!roomDetails[feature.value]}
+                key={feature.name}
               />
               <label className="form-check-label" htmlFor={feature.name}>
                 {feature.name}
