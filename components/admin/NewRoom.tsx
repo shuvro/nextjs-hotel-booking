@@ -48,6 +48,7 @@ const NewRoom = () => {
 
     if (isSuccess) {
       router.push("/admin/rooms");
+      router.refresh();
       toast.success("Room created");
     }
   }, [error, isSuccess]);

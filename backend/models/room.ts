@@ -1,6 +1,7 @@
-import mongoose, { Schema, Document } from "mongoose";
-import geoCoder from "../utils/geoCoder";
-import { IUser } from "./user";
+import mongoose, {Document, Schema} from "mongoose";
+// import geoCoder from "../utils/geoCoder";
+import {IUser} from "./user";
+import axios from "axios";
 
 export interface IImage extends Document {
   public_id: string;
@@ -44,6 +45,7 @@ export interface IRoom extends Document {
   reviews: IReview[];
   user: IUser;
   createdAt: Date;
+  updatedAt: Date;
 }
 
 const roomSchema: Schema<IRoom> = new Schema({
@@ -164,23 +166,63 @@ const roomSchema: Schema<IRoom> = new Schema({
     type: Date,
     default: Date.now,
   },
+  updatedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
+
+function parseMapQuestResponse(response: any) {
+  // Check if the response is successful and contains locations
+  if (response.results[0].locations.length > 0) {
+    const loc = response.results[0].locations[0]; // First location in the response
+
+    // Create the location object with the desired structure
+    return {
+      type: "Point",
+      coordinates: [loc.latLng.lng, loc.latLng.lat], // MapQuest uses 'latLng' with 'lng' and 'lat' properties
+      formattedAddress: loc.street ? `${loc.street}, ${loc.adminArea5}, ${loc.adminArea3}, ${loc.adminArea1}` : '',
+      city: loc.adminArea5, // 'adminArea5' is typically the city
+      state: loc.adminArea3, // 'adminArea3' is typically the state code
+      zipcode: loc.postalCode, // 'postalCode' is the zipcode
+      country: loc.adminArea1 // 'adminArea1' is typically the country code
+    };
+  } else {
+    // Handle cases where the response does not contain location data
+    console.error("No locations found or bad response", response.info.messages);
+    return {} as ILocation;
+  }
+}
 
 // setting up location
 
 roomSchema.pre<IRoom>("save", async function (next) {
   const address = this.address;
-  const loc = await geoCoder.geocode(address);
+  if (!this.isNew && !this.isModified('address')) {
+    return next();
+  }
+  const response = await axios.get(`http://www.mapquestapi.com/geocoding/v1/address`, {
+    params: {
+      key:  process.env.GEOCODER_API_KEY, // Replace with your API key
+      location: address,
+    }
+  });
 
-  this.location = {
-    type: "Point",
-    coordinates: [loc[0].longitude, loc[0].latitude],
-    formattedAddress: loc[0].formattedAddress,
-    city: loc[0].city,
-    state: loc[0].stateCode,
-    zipcode: loc[0].zipcode,
-    country: loc[0].countryCode,
-  };
+  console.log(response.data.results[0].locations)
+
+  // const loc = await geoCoder.geocode(address);
+
+  // this.location = {
+  //   type: "Point",
+  //   coordinates: [loc[0].longitude, loc[0].latitude],
+  //   formattedAddress: loc[0].formattedAddress,
+  //   city: loc[0].city,
+  //   state: loc[0].stateCode,
+  //   zipcode: loc[0].zipcode,
+  //   country: loc[0].countryCode,
+  // };
+
+  this.location = parseMapQuestResponse(response.data);
 });
 
 export default mongoose.models.Room ||

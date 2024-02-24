@@ -79,6 +79,7 @@ const UpdateRoom = ({ data }: Props) => {
       isAirConditioned: airConditioned,
       isPetsAllowed: petsAllowed,
       isRoomCleaning: roomCleaning,
+      updatedAt: Date.now(),
     };
 
     updateRoom({ id: room._id, body: roomData });
@@ -229,7 +230,7 @@ const UpdateRoom = ({ data }: Props) => {
           <label className="mb-3">Room Features</label>
 
           {roomFeatures?.map((feature, index) => (
-            <div className="form-check">
+            <div className="form-check" key={index}>
               <input
                 className="form-check-input"
                 type="checkbox"
@@ -237,7 +238,6 @@ const UpdateRoom = ({ data }: Props) => {
                 name={feature.value}
                 onChange={onChange}
                 checked={!!roomDetails[feature.value]}
-                key={index}
               />
               <label className="form-check-label" htmlFor={feature.name}>
                 {feature.name}
