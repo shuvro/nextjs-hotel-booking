@@ -32,11 +32,17 @@ class APIFilters {
     return this;
   }
 
-  pagination(resPerPage: number): APIFilters {
+  pagination(resPerPage: number, sortBy?: string): APIFilters {
     const currentPage = Number(this.queryStr?.page) || 1;
     const skip = resPerPage * (currentPage - 1);
 
     this.query = this.query.limit(resPerPage).skip(skip);
+    // sortBy field name
+    if (sortBy) {
+      this.query = this.query.sort(sortBy);
+    } else {
+      this.query = this.query.sort("-createdAt");
+    }
     return this;
   }
 }
