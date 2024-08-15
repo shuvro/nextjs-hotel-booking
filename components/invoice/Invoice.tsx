@@ -123,7 +123,8 @@ const Invoice = ({ data }: Props) => {
             </main>
             <footer className="pb-5">
               Invoice was created on a computer and is valid without the
-              signature.
+              signature. Payment related inquiries can be made by email to{" "}
+                <a href="mailto:contact@bookit.com">contact@bookit.com</a>.
             </footer>
           </div>
         </div>
