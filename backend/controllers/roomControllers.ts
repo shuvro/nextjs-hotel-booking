@@ -80,6 +80,12 @@ export const updateARoom = catchAsyncErrors(
       new: true,
     });
 
+    room = await Room.findById(params.id);
+    // set address
+    room.address = body.address;
+    await room.save();
+
+
     return NextResponse.json({
       success: true,
       room,

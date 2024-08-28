@@ -197,10 +197,11 @@ function parseMapQuestResponse(response: any) {
 // setting up location
 
 roomSchema.pre<IRoom>("save", async function (next) {
+  console.log("Address changed");
   const address = this.address;
-  if (!this.isNew && !this.isModified('address')) {
-    return next();
-  }
+  // if (!this.isNew && !this.isModified('address')) {
+  //   return next();
+  // }
   const response = await axios.get(`http://www.mapquestapi.com/geocoding/v1/address`, {
     params: {
       key:  process.env.GEOCODER_API_KEY, // Replace with your API key
